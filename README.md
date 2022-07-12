@@ -8,6 +8,10 @@
 
 `https://s3.console.aws.amazon.com/s3/buckets/tuna-public?region=ap-northeast-2&prefix=tct2022/&showversions=false`
 
+- AWS Document(https://docs.aws.amazon.com)
+- GCP Document(https://docs.microsoft.com/en-us/learn/, https://www.microsoft.com/handsonlabs)
+- Azure Document(https://cloud.google.com/docs/)
+
 ### [AWS Document 상세 출제범위 ]
 
 > Compute > EC2, EC2 Image Builder, Lambda
