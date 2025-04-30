@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.*;
 
 public class FileReadCopy {
 
@@ -17,7 +18,7 @@ public class FileReadCopy {
 	public static void main(String[] args) {
 		FileSearchAll(rootPath);
 	}
-	//ÆÄÀÏ ³»¿ë Ãâ·Â
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 	void PrintFile(String fileName) {
 		String line = null;
 		
@@ -35,7 +36,7 @@ public class FileReadCopy {
 		}
 	}
 	
-	//ÇöÀç À§Ä¡¿¡¼­ÀÇ ÆÄÀÏ ¸ñ·Ï Ãâ·Â
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 	static void FileDirList() {
 		File directory = new File(".");
 		File[] fList = directory.listFiles();
@@ -50,7 +51,7 @@ public class FileReadCopy {
 	}
 	
 	
-	//ÆÄÀÏ º¹»ç
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	static void CopyFile(String inputFile, String outputFile) {
 		final int BUFFER_SIZE = 512;
 		int readLen;
@@ -73,7 +74,7 @@ public class FileReadCopy {
 	}
 	
 	
-	//ÆÄÀÏ ¸®½ºÆ® º¹»ç
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 	static void FileSearchAll(String path) {
 		File directory = new File(path);
 		File[] fList = directory.listFiles();
@@ -93,6 +94,45 @@ public class FileReadCopy {
 					CopyFile(file.getPath(), targetPath);
 				}
 			}
+		}
+	}
+
+	static void watchDirecory(String path) throws IOException, InterruptedException{
+		WatchService watchService = FileSystems.getDefault().newWatchService();
+
+		Path dirPath = Paths.get(path);
+		dirPath.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
+		
+
+		while(true){
+			WatchKey key = watchService.take();
+			for(WatchEvent<?> event: key.pollEvents()){
+
+				WatchEvent.Kind<?> kind = event.kind();
+				Path filePath = dirPath.resolve((Path) event.context());
+
+				if(kind == StandardWatchEventKinds.ENTRY_CREATE){
+					if(filePath.toString().endsWith(".txt")){
+						readFileContent(filePath.toFile());
+					}
+				}else if(kind == StandardWatchEventKinds.ENTRY_MODIFY){
+					if(filePath.toString().endsWith(".txt")){
+						readFileContent(filePath.toFile());
+					}
+				}
+
+			}
+		}
+	}
+
+	static void readFileContent(File file){
+		try(BufferedReader bufferedReader = new BufferedReader(new FileReader(file))){
+			String line;
+			while((line = bufferedReader.readLine()) != null){
+				continue;
+			}
+		}catch(IOException e){
+			e.printStackTrace();
 		}
 	}
 }
