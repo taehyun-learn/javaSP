@@ -1,9 +1,12 @@
 package process;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,7 +14,7 @@ import java.util.List;
 
 public class ProcessAndThread {
 	public static void main(String[] args) throws IOException, InterruptedException {		
-		System.out.println(String.format("Start - " + new Date().toString())); // ÇöÀç½Ã°¢Ãâ·Â
+		System.out.println(String.format("Start - " + new Date().toString())); // ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½ï¿½
 		
 		FileReader fileReader = new FileReader("NUM.TXT");
         BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -32,10 +35,10 @@ public class ProcessAndThread {
         {
         	th.join();
         }
-		System.out.println("End - " + new Date().toString()); // ÇöÀç½Ã°¢Ãâ·Â
+		System.out.println("End - " + new Date().toString()); // ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½ï¿½
 	}
 }
-class ProcessThread extends Thread { // 'Thread' Class¸¦ »ó¼Ó¹Þ´Â´Ù 
+class ProcessThread extends Thread { // 'Thread' Classï¿½ï¿½ ï¿½ï¿½Ó¹Þ´Â´ï¿½ 
 	int num1;
 	int num2;
     public ProcessThread(int n1, int n2) { 
@@ -62,4 +65,26 @@ class ProcessThread extends Thread { // 'Thread' Class¸¦ »ó¼Ó¹Þ´Â´Ù
 		int len = psout.read(buffer);
 		return (new String(buffer, 0, len));
 	}    
+
+	public String interactWithProcess(List<String> cmdList, int num1, int num2) throws IOException, InterruptedException{
+		ProcessBuilder builder = new ProcessBuilder(cmdList);
+		Process process = builder.start();
+
+		try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()))){
+			writer.write(num1 + "\n");
+			writer.write(num2 + "\n");
+			writer.flush();
+		}
+
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+			StringBuilder output = new StringBuilder();
+			String line;
+			while((line = reader.readLine())!=null){
+				output.append(line).append("\n");
+			}
+			process.waitFor();
+			return output.toString().trim();
+		}
+
+	}
 } 
